@@ -2,6 +2,8 @@
 
 Uma **Single Page Application (SPA)** moderna e responsiva para gerenciar personagens de RPG, desenvolvida com **HTML, CSS e JavaScript puro** (sem frameworks como React, Vue ou Angular).
 
+Este repositório contém apenas o frontend da aplicação. Para o backend API, veja [backend-repo](https://github.com/leonardoccamargo/backend-repo).
+
 ---
 
 ## 📋 Características
@@ -19,7 +21,7 @@ Uma **Single Page Application (SPA)** moderna e responsiva para gerenciar person
 ## 🗂️ Estrutura do Projeto
 
 ```
-frontend/
+frontend-repo/
 ├── index.html              # Página HTML principal
 ├── app.js                  # Lógica JavaScript (CRUD completo)
 ├── style.css               # Estilos CSS responsivos
@@ -30,23 +32,133 @@ frontend/
 
 ## 🚀 Instalação e Uso
 
-### **Opção 1: Executar Localmente (Recomendado)**
+### **Pré-requisitos**
+- Navegador web moderno
+- Backend API rodando (opcional, mas recomendado)
 
-#### **Pré-requisitos**
-- Python 3.8+ OU Node.js/npm (ou qualquer servidor HTTP local)
+### **Passo 1: Clonar o Repositório**
 
-#### **Com Backend Flask Rodando (Integração Total)**
+```bash
+git clone https://github.com/leonardoccamargo/frontend-repo.git
+cd frontend-repo
+```
+
+### **Opção 1: Executar com Backend (Recomendado)**
 
 1. **Certifique-se que o Backend está rodando:**
    ```bash
-   # Em outro terminal, na pasta do backend
+   # Em outro terminal, clone e rode o backend
+   git clone https://github.com/leonardoccamargo/backend-repo.git
+   cd backend-repo
    python main.py
    # Deve aparecer: Running on http://127.0.0.1:5000
    ```
 
 2. **Abra o Frontend:**
-   - **Opção A (Servido pelo Flask):** Acesse `http://127.0.0.1:5000`
-   - **Opção B (Arquivo local):** Duplo clique em `frontend/index.html`
+   - **Arquivo local:** Duplo clique em `index.html`
+   - **OU servidor local:** Use Python ou Node.js (veja Opção 2)
+
+### **Opção 2: Servidor HTTP Simples (Sem Backend)**
+
+Se quiser apenas testar a interface (usará LocalStorage):
+
+#### **Python:**
+```bash
+python -m http.server 8000
+# Acesse: http://localhost:8000
+```
+
+#### **Node.js (http-server):**
+```bash
+npm install -g http-server
+http-server
+```
+
+---
+
+## 🎯 Como Usar a Aplicação
+
+### **1. Adicionar Personagem**
+1. Preencha os campos:
+   - **Nome do Personagem:** Nome único
+   - **Classe:** Guerreiro, Mago, Arqueiro, etc.
+   - **Nível:** Número entre 1-99
+2. Clique em **"Adicionar Personagem"**
+3. O personagem aparecerá na tabela abaixo
+
+### **2. Visualizar Personagens**
+- Todos os personagens aparecem em uma **tabela com colunas:**
+  - ID
+  - Nome
+  - Classe
+  - Nível
+  - Ações (Editar/Deletar)
+
+### **3. Editar Personagem**
+1. Clique no botão **"Editar"** do personagem
+2. Preencha os novos dados nos prompts
+3. O personagem será atualizado
+
+### **4. Deletar Personagem**
+1. Clique no botão **"Deletar"** do personagem
+2. Confirme a exclusão
+3. O personagem será removido
+
+---
+
+## 🔗 Integração com Backend
+
+A aplicação tenta conectar automaticamente com a API em `http://127.0.0.1:5000`.
+
+- **Se a API estiver rodando:** Dados são salvos no banco SQLite
+- **Se a API não estiver disponível:** Fallback para LocalStorage do navegador
+
+### **Configurar URL da API**
+Para alterar a URL da API, edite a constante `API_BASE_URL` no arquivo `app.js`:
+
+```javascript
+const API_BASE_URL = 'http://127.0.0.1:5000'; // Altere para sua URL
+```
+
+---
+
+## 🎨 Personalização
+
+### **Estilos CSS**
+O arquivo `style.css` contém:
+- Design responsivo
+- Tema escuro/claro
+- Animações suaves
+- Layout mobile-first
+
+### **Funcionalidades JavaScript**
+O arquivo `app.js` inclui:
+- CRUD completo
+- Validação de formulários
+- Tratamento de erros
+- Fallback automático
+
+---
+
+## 📱 Compatibilidade
+
+- ✅ Chrome 80+
+- ✅ Firefox 75+
+- ✅ Safari 13+
+- ✅ Edge 80+
+- ✅ Mobile browsers
+
+---
+
+## 📝 Licença
+
+Este projeto é parte do trabalho acadêmico de Pós-Graduação em Desenvolvimento Full Stack - PUC-RJ.
+
+---
+
+## 👥 Autor
+
+**Leonardo Camargo** - [GitHub](https://github.com/leonardoccamargo)
 
 ---
 
