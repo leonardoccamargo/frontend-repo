@@ -74,6 +74,9 @@ async function verificarConexaoAPI() {
  * Carrega e exibe todos os personagens da API ou localStorage
  */
 async function carregarPersonagens() {
+    // Mostra indicador de loading
+    mostrarLoading();
+
     try {
         // Se estiver em modo localStorage, carrega do navegador
         if (useLocalStorage) {
@@ -107,6 +110,9 @@ async function carregarPersonagens() {
         useLocalStorage = true;
         const personagens = obterPersonagensArmazenados();
         exibirPersonagens(personagens);
+    } finally {
+        // Remove indicador de loading
+        ocultarLoading();
     }
 }
 
@@ -126,8 +132,8 @@ function exibirPersonagens(personagens) {
     // Oculta mensagens anteriores
     ocultarMensagem();
 
-    // Para cada personagem, cria uma linha na tabela
-    personagens.forEach((personagem) => {
+    // Para cada personagem, cria uma linha na tabela com animação
+    personagens.forEach((personagem, index) => {
         const linha = document.createElement('tr');
         linha.innerHTML = `
             <td>${personagem.id}</td>
@@ -139,6 +145,11 @@ function exibirPersonagens(personagens) {
                 <button class="btn-deletar" onclick="deletarPersonagem(${personagem.id})">Deletar</button>
             </td>
         `;
+
+        // Adiciona animação de entrada com atraso progressivo
+        linha.style.animationDelay = `${index * 0.1}s`;
+        linha.classList.add('animate-fade-in');
+
         tabelaCorpo.appendChild(linha);
     });
 }
@@ -289,6 +300,33 @@ async function editarPersonagemAPI(personagem) {
     if (isNaN(nivelNum) || nivelNum < 1) {
         mostrarMensagem('Nível deve ser um número maior que 0', 'erro');
         return;
+    }
+
+    // Validação adicional: verifica se o nome mudou e se já existe
+    if (novoNome.trim() !== personagem.nome) {
+        try {
+            // Busca todos os personagens para verificar duplicatas
+            const resposta = await fetch(API_ENDPOINT, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (resposta.ok) {
+                const dados = await resposta.json();
+                if (dados.status === 'success') {
+                    const nomeExiste = dados.personagens.some(p =>
+                        p.nome.toLowerCase() === novoNome.trim().toLowerCase() && p.id !== personagem.id
+                    );
+
+                    if (nomeExiste) {
+                        mostrarMensagem('Já existe um personagem com este nome', 'erro');
+                        return;
+                    }
+                }
+            }
+        } catch (erro) {
+            console.warn('Não foi possível verificar duplicatas, prosseguindo...', erro);
+        }
     }
 
     const dadosAtualizados = {
@@ -489,5 +527,33 @@ function toggleTheme() {
 
 // Event listener para o botão toggle
 themeToggle.addEventListener('click', toggleTheme);
+
+// ============================================
+// FUNÇÕES DE LOADING E ANIMAÇÕES
+// ============================================
+
+/**
+ * Mostra indicador de loading na tabela
+ */
+function mostrarLoading() {
+    tabelaCorpo.innerHTML = `
+        <tr class="loading-row">
+            <td colspan="5" style="text-align: center; padding: 40px;">
+                <div class="loading-spinner"></div>
+                <p style="margin-top: 10px; color: var(--text-secondary);">Carregando personagens...</p>
+            </td>
+        </tr>
+    `;
+}
+
+/**
+ * Remove indicador de loading
+ */
+function ocultarLoading() {
+    const loadingRow = document.querySelector('.loading-row');
+    if (loadingRow) {
+        loadingRow.remove();
+    }
+}
 
 
