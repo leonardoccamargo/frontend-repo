@@ -1,3 +1,36 @@
+/* ========== VARIÁVEIS DE TEMA ========== */
+:root {
+    /* Tema Claro (padrão) */
+    --bg-primary: #f5f5f5;
+    --bg-secondary: white;
+    --bg-tertiary: #f9f9f9;
+    --text-primary: #333;
+    --text-secondary: #555;
+    --border-color: #ddd;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --btn-primary: #007bff;
+    --btn-danger: #dc3545;
+    --btn-success: #28a745;
+    --input-bg: white;
+    --input-border: #ccc;
+}
+
+/* Tema Escuro */
+[data-theme="dark"] {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --bg-tertiary: #3a3a3a;
+    --text-primary: #e0e0e0;
+    --text-secondary: #b0b0b0;
+    --border-color: #555;
+    --shadow-color: rgba(0, 0, 0, 0.3);
+    --btn-primary: #0d6efd;
+    --btn-danger: #dc3545;
+    --btn-success: #198754;
+    --input-bg: #404040;
+    --input-border: #666;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -6,38 +39,73 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
+    background-color: var(--bg-primary);
     padding: 20px;
+    transition: background-color 0.3s ease;
 }
 
 .container {
     max-width: 1000px;
     margin: 0 auto;
-    background-color: white;
+    background-color: var(--bg-secondary);
     padding: 30px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px var(--shadow-color);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 h1 {
     text-align: center;
-    color: #333;
+    color: var(--text-primary);
     margin-bottom: 30px;
+    transition: color 0.3s ease;
 }
 
 h2 {
-    color: #555;
+    color: var(--text-secondary);
     margin: 20px 0 15px 0;
-    border-bottom: 2px solid #ddd;
+    border-bottom: 2px solid var(--border-color);
     padding-bottom: 10px;
+    transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+/* ========== BOTÃO TOGGLE TEMA ========== */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--btn-primary);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 14px;
+    box-shadow: 0 2px 4px var(--shadow-color);
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.theme-toggle:hover {
+    transform: scale(1.05);
+}
+
+.theme-toggle::before {
+    content: "🌙"; /* Lua para modo escuro */
+    margin-right: 5px;
+}
+
+[data-theme="dark"] .theme-toggle::before {
+    content: "☀️"; /* Sol para modo claro */
 }
 
 /* Form Styles */
 .form-section {
     margin-bottom: 40px;
     padding: 20px;
-    background-color: #f9f9f9;
+    background-color: var(--bg-tertiary);
     border-radius: 5px;
+    transition: background-color 0.3s ease;
 }
 
 .form-group {
@@ -48,38 +116,43 @@ h2 {
 
 label {
     margin-bottom: 5px;
-    color: #333;
+    color: var(--text-primary);
     font-weight: bold;
+    transition: color 0.3s ease;
 }
 
 input[type="text"],
 input[type="number"] {
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--input-border);
     border-radius: 4px;
     font-size: 14px;
+    background-color: var(--input-bg);
+    color: var(--text-primary);
+    transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
 }
 
 input[type="text"]:focus,
 input[type="number"]:focus {
     outline: none;
-    border-color: #4CAF50;
-    box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+    border-color: var(--btn-success);
+    box-shadow: 0 0 5px rgba(40, 167, 69, 0.3);
 }
 
 .btn-submit {
     padding: 12px 20px;
-    background-color: #4CAF50;
+    background-color: var(--btn-success);
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
     margin-top: 10px;
+    transition: background-color 0.3s ease;
 }
 
 .btn-submit:hover {
-    background-color: #45a049;
+    background-color: #198754;
 }
 
 .btn-submit:active {
@@ -98,7 +171,7 @@ table {
 }
 
 thead {
-    background-color: #4CAF50;
+    background-color: var(--btn-success);
     color: white;
 }
 
@@ -110,15 +183,17 @@ th {
 
 td {
     padding: 12px 15px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+    transition: color 0.3s ease;
 }
 
 tbody tr:hover {
-    background-color: #f0f0f0;
+    background-color: var(--bg-tertiary);
 }
 
 tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
+    background-color: var(--bg-tertiary);
 }
 
 /* Action Buttons */
@@ -130,19 +205,20 @@ tbody tr:nth-child(even) {
     cursor: pointer;
     margin-right: 5px;
     font-size: 14px;
+    transition: background-color 0.3s ease;
 }
 
 .btn-editar {
-    background-color: #2196F3;
+    background-color: var(--btn-primary);
     color: white;
 }
 
 .btn-editar:hover {
-    background-color: #0b7dda;
+    background-color: #0d6efd;
 }
 
 .btn-deletar {
-    background-color: #f44336;
+    background-color: var(--btn-danger);
     color: white;
 }
 
@@ -178,4 +254,148 @@ tbody tr:nth-child(even) {
     background-color: #d4edda;
     color: #155724;
     border: 1px solid #c3e6cb;
+}
+
+#mensagem-lista.mensagem-sucesso-info {
+    display: block;
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+#mensagem-lista.mensagem-aviso {
+    display: block;
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeeba;
+}
+
+/* ========== RESPONSIVIDADE PARA MOBILE ========== */
+
+/* Tablets e celulares grandes */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        padding: 20px;
+        margin: 0;
+        max-width: 100%;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+    }
+
+    .form-section {
+        padding: 15px;
+    }
+
+    .form-group {
+        margin-bottom: 12px;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+        padding: 12px;
+        font-size: 16px; /* Evita zoom no iOS */
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 14px;
+        font-size: 16px;
+    }
+
+    /* Tabela responsiva */
+    .table-section {
+        overflow-x: auto;
+    }
+
+    table {
+        min-width: 600px; /* Garante que a tabela não quebre */
+    }
+
+    th, td {
+        padding: 10px 8px;
+        font-size: 14px;
+    }
+
+    .btn-editar, .btn-deletar {
+        padding: 6px 8px;
+        font-size: 12px;
+        margin-right: 2px;
+    }
+
+    /* Botão toggle do tema */
+    .theme-toggle {
+        top: 10px;
+        right: 10px;
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+}
+
+/* Celulares pequenos */
+@media (max-width: 480px) {
+    .container {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    h2 {
+        font-size: 1.2rem;
+        margin: 15px 0 10px 0;
+    }
+
+    .form-section {
+        padding: 12px;
+    }
+
+    /* Stack dos botões de ação em mobile */
+    .btn-editar, .btn-deletar {
+        display: block;
+        width: 100%;
+        margin: 2px 0;
+        text-align: center;
+    }
+
+    /* Ajuste da tabela para mobile */
+    th, td {
+        padding: 8px 4px;
+        font-size: 13px;
+    }
+
+    /* Esconde colunas menos importantes em telas muito pequenas */
+    th:nth-child(1), /* ID */
+    td:nth-child(1) {
+        display: none;
+    }
+
+    /* Botão toggle menor */
+    .theme-toggle {
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+}
+
+/* Ajustes para orientação landscape em mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+    body {
+        padding: 5px;
+    }
+
+    .container {
+        padding: 15px;
+    }
+
+    .theme-toggle {
+        top: 5px;
+        right: 5px;
+    }
 }
