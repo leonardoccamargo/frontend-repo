@@ -13,6 +13,9 @@
     --btn-success: #28a745;
     --input-bg: white;
     --input-border: #ccc;
+    /* Fundo do tema claro: troque a URL abaixo se quiser outra imagem */
+    --page-background-overlay: rgba(255, 255, 255, 0.65);
+    --page-background-image: url('https://i.imgur.com/v9tjFUO.png');
 }
 
 /* Tema Escuro */
@@ -29,6 +32,9 @@
     --btn-success: #198754;
     --input-bg: #404040;
     --input-border: #666;
+    /* Fundo do tema escuro: troque a URL abaixo se quiser outra imagem */
+    --page-background-overlay: rgba(0, 0, 0, 0.65);
+    --page-background-image: url('https://i.imgur.com/cF3UmHE.png');
 }
 
 /* ========== ANIMAÇÕES ========== */
@@ -160,9 +166,8 @@ body {
     background-color: var(--bg-primary);
     padding: 20px;
     transition: background-color 0.3s ease;
-    /* Imagem de fundo opaca */
-    background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)),
-                      url('https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80');
+    background-image: linear-gradient(var(--page-background-overlay), var(--page-background-overlay)),
+                      var(--page-background-image);
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
