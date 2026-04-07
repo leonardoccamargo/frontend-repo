@@ -19,13 +19,62 @@ const classeInput = document.getElementById('classe');  // Campo de classe
 const nivelInput = document.getElementById('nivel');  // Campo de nível
 const tabelaCorpo = document.getElementById('personagensBody');  // Corpo da tabela
 const mensagem = document.getElementById('mensagem-lista');  // Área de mensagens
+const criarFichaCta = document.getElementById('criarFichaCta');
 
 // ============================================
 // INICIALIZAÇÃO DA APLICAÇÃO
 // ============================================
 
 // Event listener que executa quando a página carrega completamente
+    if ("scrollRestoration" in history) {
+            history.scrollRestoration = "manual";
+    }
+    
+    window.scrollTo(0, 0);
+
+    if (window.location.hash) {
+            history.replaceState(null, "", window.location.pathname + window.location.search);
+    }
+
 document.addEventListener('DOMContentLoaded', async () => {
+    if (criarFichaCta) {
+        criarFichaCta.addEventListener('click', () => {
+            formulario.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            nomeInput.focus();
+        });
+    }
+
+    // Event listeners para busca e filtro
+    const btnBuscarNome = document.getElementById('btnBuscarNome');
+    const btnFiltrarClasse = document.getElementById('btnFiltrarClasse');
+    const btnCarregarTodos = document.getElementById('btnCarregarTodos');
+    const searchNome = document.getElementById('searchNome');
+    const filterClasse = document.getElementById('filterClasse');
+
+    if (btnBuscarNome) {
+        btnBuscarNome.addEventListener('click', buscarPorNome);
+    }
+    if (btnFiltrarClasse) {
+        btnFiltrarClasse.addEventListener('click', filtrarPorClasse);
+    }
+    if (btnCarregarTodos) {
+        btnCarregarTodos.addEventListener('click', carregarPersonagens);
+    }
+
+    // Permitir busca com Enter
+    if (searchNome) {
+        searchNome.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') buscarPorNome();
+        });
+    }
+
+    // Permitir filtro com Enter
+    if (filterClasse) {
+        filterClasse.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') filtrarPorClasse();
+        });
+    }
+
     // Verifica conexão com API e depois carrega personagens
     await verificarConexaoAPI();
     await carregarPersonagens();
@@ -120,7 +169,7 @@ async function carregarPersonagens() {
  * Renderiza a lista de personagens na tabela HTML
  */
 function exibirPersonagens(personagens) {
-    // Limpa o conteúdo atual da tabela
+    // Limpa o conteúdo atual da grade de cards
     tabelaCorpo.innerHTML = '';
 
     // Se não há personagens, mostra mensagem
@@ -132,23 +181,34 @@ function exibirPersonagens(personagens) {
     // Oculta mensagens anteriores
     ocultarMensagem();
 
-    // Para cada personagem, cria uma linha na tabela com animação
+    // Para cada personagem, cria um card com animação de entrada
     personagens.forEach((personagem, index) => {
-        const linha = document.createElement('tr');
+        const linha = document.createElement('article');
+        linha.classList.add('character-card', 'personagem-card');
+        const hp = 10 + personagem.nivel * 5;
+        const mana = 6 + personagem.nivel * 3;
+        const ca = 10 + Math.floor(personagem.nivel / 2);
+
         linha.innerHTML = `
-            <td>${personagem.id}</td>
-            <td>${personagem.nome}</td>
-            <td>${personagem.classe}</td>
-            <td>${personagem.nivel}</td>
-            <td>
+            <div class="personagem-topo">
+                <h3 class="personagem-nome">${personagem.nome}</h3>
+                <span class="personagem-id">ID ${personagem.id}</span>
+            </div>
+            <p class="personagem-info">Classe: ${personagem.classe} | Nível: ${personagem.nivel}</p>
+            <div class="status-rapido">
+                <div><span>HP</span><strong>${hp}</strong></div>
+                <div><span>Mana</span><strong>${mana}</strong></div>
+                <div><span>CA</span><strong>${ca}</strong></div>
+            </div>
+            <div class="personagem-acoes">
+                <button class="btn-editar btn-detalhes" data-character-id="${personagem.id}" onclick="abrirEditarPersonagem(${personagem.id})">Visualizar Detalhes</button>
                 <button class="btn-editar" onclick="abrirEditarPersonagem(${personagem.id})">Editar</button>
                 <button class="btn-deletar" onclick="deletarPersonagem(${personagem.id})">Deletar</button>
-            </td>
+            </div>
         `;
 
         // Adiciona animação de entrada com atraso progressivo
         linha.style.animationDelay = `${index * 0.1}s`;
-        linha.classList.add('animate-fade-in');
 
         tabelaCorpo.appendChild(linha);
     });
@@ -506,18 +566,32 @@ function ocultarMensagem() {
 // Elemento do botão toggle
 const themeToggle = document.getElementById('themeToggle');
 
-// Carrega o tema salvo no localStorage ou usa 'light' como padrão
-let currentTheme = localStorage.getItem('theme') || 'light';
+// Carrega o tema salvo no localStorage ou usa 'dark' como padrão
+let currentTheme = localStorage.getItem('theme') || 'dark';
+
+// Atualiza o texto e os atributos do botão conforme o tema ativo.
+function atualizarRotuloTema(theme) {
+    if (!themeToggle) {
+        return;
+    }
+
+    const label = theme === 'light' ? 'Alterar para escuro' : 'Alterar para claro';
+    themeToggle.textContent = label;
+    themeToggle.title = `Tema ${label.toLowerCase()} ativo`;
+    themeToggle.setAttribute('aria-label', `Tema ${label.toLowerCase()} ativo`);
+}
 
 // Aplica o tema atual ao carregar a página
 document.documentElement.setAttribute('data-theme', currentTheme);
+atualizarRotuloTema(currentTheme);
 
 // Função para alternar entre temas
 function toggleTheme() {
-    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+    currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
 
     // Aplica o novo tema
     document.documentElement.setAttribute('data-theme', currentTheme);
+    atualizarRotuloTema(currentTheme);
 
     // Salva a preferência no localStorage
     localStorage.setItem('theme', currentTheme);
@@ -529,6 +603,116 @@ function toggleTheme() {
 themeToggle.addEventListener('click', toggleTheme);
 
 // ============================================
+// FUNÇÕES DE BUSCA E FILTRO
+// ============================================
+
+/**
+ * Busca personagens por nome usando a rota /api/buscar
+ */
+async function buscarPorNome() {
+    const searchNome = document.getElementById('searchNome');
+    const termo = searchNome.value.trim();
+
+    if (!termo) {
+        mostrarMensagem('Por favor, digite um nome para buscar', 'aviso');
+        return;
+    }
+
+    mostrarLoading();
+
+    try {
+        if (useLocalStorage) {
+            // Fallback: busca no localStorage
+            const personagens = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            const resultados = personagens.filter(p => 
+                p.nome.toLowerCase().includes(termo.toLowerCase())
+            );
+            
+            if (resultados.length === 0) {
+                mostrarMensagem(`Nenhum personagem encontrado com o nome "${termo}"`, 'info');
+                tabelaCorpo.innerHTML = '';
+            } else {
+                mostrarMensagem(`${resultados.length} personagem(s) encontrado(s)`, 'sucesso-info');
+                exibirPersonagens(resultados);
+            }
+        } else {
+            // Busca via API
+            const resposta = await fetch(`${API_BASE_URL}/api/buscar?nome=${encodeURIComponent(termo)}`);
+            
+            if (!resposta.ok) {
+                throw new Error(`Erro na busca: ${resposta.status}`);
+            }
+
+            const dados = await resposta.json();
+
+            if (dados.personagens && dados.personagens.length > 0) {
+                mostrarMensagem(`${dados.total} personagem(s) encontrado(s) com "${termo}"`, 'sucesso-info');
+                exibirPersonagens(dados.personagens);
+            } else {
+                mostrarMensagem(`Nenhum personagem encontrado com o nome "${termo}"`, 'info');
+                tabelaCorpo.innerHTML = '';
+            }
+        }
+    } catch (erro) {
+        console.error('Erro ao buscar personagens:', erro);
+        mostrarMensagem('Erro ao buscar personagens', 'erro');
+    }
+}
+
+/**
+ * Filtra personagens por classe usando a rota /api/classe
+ */
+async function filtrarPorClasse() {
+    const filterClasse = document.getElementById('filterClasse');
+    const classe = filterClasse.value.trim();
+
+    if (!classe) {
+        mostrarMensagem('Por favor, digite uma classe para filtrar', 'aviso');
+        return;
+    }
+
+    mostrarLoading();
+
+    try {
+        if (useLocalStorage) {
+            // Fallback: filtra no localStorage
+            const personagens = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            const resultados = personagens.filter(p => 
+                p.classe.toLowerCase().includes(classe.toLowerCase())
+            );
+            
+            if (resultados.length === 0) {
+                mostrarMensagem(`Nenhum personagem da classe "${classe}" encontrado`, 'info');
+                tabelaCorpo.innerHTML = '';
+            } else {
+                mostrarMensagem(`${resultados.length} personagem(s) da classe "${classe}"`, 'sucesso-info');
+                exibirPersonagens(resultados);
+            }
+        } else {
+            // Filtra via API
+            const resposta = await fetch(`${API_BASE_URL}/api/classe?nome=${encodeURIComponent(classe)}`);
+            
+            if (!resposta.ok) {
+                throw new Error(`Erro no filtro: ${resposta.status}`);
+            }
+
+            const dados = await resposta.json();
+
+            if (dados.personagens && dados.personagens.length > 0) {
+                mostrarMensagem(`${dados.total} personagem(s) da classe "${classe}"`, 'sucesso-info');
+                exibirPersonagens(dados.personagens);
+            } else {
+                mostrarMensagem(`Nenhum personagem da classe "${classe}" encontrado`, 'info');
+                tabelaCorpo.innerHTML = '';
+            }
+        }
+    } catch (erro) {
+        console.error('Erro ao filtrar personagens:', erro);
+        mostrarMensagem('Erro ao filtrar personagens', 'erro');
+    }
+}
+
+// ============================================
 // FUNÇÕES DE LOADING E ANIMAÇÕES
 // ============================================
 
@@ -537,12 +721,12 @@ themeToggle.addEventListener('click', toggleTheme);
  */
 function mostrarLoading() {
     tabelaCorpo.innerHTML = `
-        <tr class="loading-row">
-            <td colspan="5" style="text-align: center; padding: 40px;">
+        <div class="loading-wrap loading-row">
+            <div style="text-align: center; padding: 24px;">
                 <div class="loading-spinner"></div>
-                <p style="margin-top: 10px; color: var(--text-secondary);">Carregando personagens...</p>
-            </td>
-        </tr>
+                <p style="margin-top: 10px; color: var(--texto-secundario);">Carregando personagens...</p>
+            </div>
+        </div>
     `;
 }
 

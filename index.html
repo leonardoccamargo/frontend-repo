@@ -3,56 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RPG Character Manager</title>
+    <title>Atlas Arcano | Gestor de Personagens</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-    <!-- Botão para alternar entre tema claro e escuro -->
-    <button id="themeToggle" class="theme-toggle" title="Alternar tema">Tema</button>
-
     <div class="container">
-        <h1>Projeto RPG</h1>
-        
-        <section class="form-section">
-            <h2>Adicionar Novo Personagem</h2>
-            <form id="personagemForm">
-                <div class="form-group">
-                    <label for="nome">Nome do Personagem:</label>
-                    <input type="text" id="nome" name="nome" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="classe">Classe:</label>
-                    <input type="text" id="classe" name="classe" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="nivel">Nível:</label>
-                    <input type="number" id="nivel" name="nivel" min="1" value="1">
-                </div>
-                
-                <button type="submit" class="btn-submit">Adicionar Personagem</button>
-            </form>
+        <header class="topo-arcano">
+            <h1 class="titulo-arcano">Atlas Arcano</h1>
+            <nav class="menu-arcano" aria-label="Navegação principal">
+                <a href="#secao-personagens">Personagens</a>
+                <a href="#secao-grimorio">Grimório</a>
+                <a href="#secao-inventario">Inventário</a>
+                <button id="themeToggle" class="theme-toggle" title="Tema escuro ativo" aria-label="Tema escuro ativo">Escuro</button>
+            </nav>
+        </header>
+
+        <section class="hero-arcano" aria-labelledby="hero-title">
+            <div class="hero-conteudo">
+                <h2 id="hero-title">Aqui suas jornadas se tornam memoráveis!</h2>
+                <p>Começe a registrar as suas aventuras agora mesmo.</p>
+                <button id="criarFichaCta" class="btn-submit cta-mistico" type="button">Criar Nova Ficha</button>
+            </div>
         </section>
 
-        <section class="table-section">
-            <h2>Personagens Cadastrados</h2>
-            <table id="personagensTable">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nome</th>
-                        <th>Classe</th>
-                        <th>Nível</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="personagensBody">
-                    <!-- Dados serão inseridos aqui via JavaScript -->
-                </tbody>
-            </table>
-            <p id="mensagem-lista"></p>
+        <main>
+            <section id="secao-personagens" class="form-section" aria-labelledby="form-title">
+                <h2 id="form-title">Adicionar Novo Personagem</h2>
+                <form id="personagemForm">
+                    <div class="form-group">
+                        <label for="nome">Nome do Personagem:</label>
+                        <input type="text" id="nome" name="nome" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="classe">Classe:</label>
+                        <input type="text" id="classe" name="classe" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nivel">Nível:</label>
+                        <input type="number" id="nivel" name="nivel" min="1" value="1">
+                    </div>
+
+                    <button type="submit" class="btn-submit">Adicionar Personagem</button>
+                </form>
+            </section>
+
+            <section id="secao-personagens-grid" class="table-section" aria-labelledby="grid-title">
+                <h2 id="grid-title">Personagens Cadastrados</h2>
+                
+                <div class="search-filter-container">
+                    <div class="search-group">
+                        <input type="text" id="searchNome" placeholder="Buscar por nome..." class="search-input">
+                        <button id="btnBuscarNome" class="btn-buscar" type="button">Buscar</button>
+                    </div>
+                    <div class="filter-group">
+                        <input type="text" id="filterClasse" placeholder="Filtrar por classe..." class="search-input">
+                        <button id="btnFiltrarClasse" class="btn-buscar" type="button">Filtrar</button>
+                    </div>
+                    <button id="btnCarregarTodos" class="btn-buscar btn-reset" type="button">Carregar Todos</button>
+                </div>
+
+                <div id="personagensBody" class="cards-grid" aria-live="polite">
+                    <!-- Cards serão inseridos aqui via JavaScript -->
+                </div>
+                <p id="mensagem-lista"></p>
+            </section>
+
+            <section id="secao-grimorio" class="aux-section" aria-labelledby="grimorio-title">
+                <h2 id="grimorio-title">Grimório</h2>
+                <h3>Slots de Magia</h3>
+                <div class="hook-actions">
+                    <button id="gastarSlotNivel1" class="btn-editar" type="button" data-slot-nivel="1">Gastar Slot Nível 1</button>
+                    <button id="gastarSlotNivel2" class="btn-editar" type="button" data-slot-nivel="2">Gastar Slot Nível 2</button>
+                    <button id="recuperarSlots" class="btn-editar" type="button" data-action="recuperar-slots">Recuperar Slots</button>
+                </div>
+            </section>
+
+            <section id="secao-inventario" class="aux-section" aria-labelledby="inventario-title">
+                <h2 id="inventario-title">Inventário</h2>
+                <p>Espaço preparado para itens, equipamentos e consumíveis da campanha.</p>
+                <div class="hook-actions">
+                    <button id="rolarD20Btn" class="btn-editar" type="button" data-dice="d20">Rolar d20</button>
+                    <button id="rolarD12Btn" class="btn-editar" type="button" data-dice="d12">Rolar d12</button>
+                    <button id="rolarD6Btn" class="btn-editar" type="button" data-dice="d6">Rolar d6</button>
+                </div>
+            </section>
+
+        </main>
+
+        <section id="modalAtributos" class="modal-placeholder" aria-labelledby="atributos-title" aria-hidden="true">
+            <h2 id="atributos-title">Edição de Atributos</h2>
+            <h3>Atributos Base</h3>
+            <div class="hook-actions">
+                <button id="editarForcaBtn" class="btn-editar" type="button" data-attr="forca">Força</button>
+                <button id="editarDestrezaBtn" class="btn-editar" type="button" data-attr="destreza">Destreza</button>
+                <button id="editarConstituicaoBtn" class="btn-editar" type="button" data-attr="constituicao">Constituição</button>
+                <button id="editarInteligenciaBtn" class="btn-editar" type="button" data-attr="inteligencia">Inteligência</button>
+                <button id="editarSabedoriaBtn" class="btn-editar" type="button" data-attr="sabedoria">Sabedoria</button>
+                <button id="editarCarismaBtn" class="btn-editar" type="button" data-attr="carisma">Carisma</button>
+            </div>
         </section>
+
+        <footer class="rodape-arcano">
+            <p>Atlas Arcano • Registro de campanhas, personagens e aventuras.</p>
+        </footer>
     </div>
 
     <script src="./app.js"></script>
