@@ -20,29 +20,136 @@ const nivelInput = document.getElementById('nivel');  // Campo de nível
 const tabelaCorpo = document.getElementById('personagensBody');  // Corpo da tabela
 const mensagem = document.getElementById('mensagem-lista');  // Área de mensagens
 const criarFichaCta = document.getElementById('criarFichaCta');
+const voltarInicioBtn = document.getElementById('voltarInicioBtn');
+let personagemAtivo = null;
+const personagensCache = {};
+const slotState = {};
+const heroSection = document.querySelector('.hero-arcano');
+const menuLinks = Array.from(document.querySelectorAll('.menu-link'));
+const sectionViews = {
+    home: [heroSection],
+    personagens: [document.getElementById('secao-personagens-grid')],
+    novaFicha: [document.getElementById('secao-personagens'), document.getElementById('secao-personagens-grid')],
+    grimorio: [document.getElementById('secao-grimorio')],
+    inventario: [document.getElementById('secao-inventario')]
+};
+const controlledSections = Object.values(sectionViews)
+    .flat()
+    .filter((section, index, sections) => section && sections.indexOf(section) === index);
 
 // ============================================
 // INICIALIZAÇÃO DA APLICAÇÃO
 // ============================================
 
-// Event listener que executa quando a página carrega completamente
-    if ("scrollRestoration" in history) {
-            history.scrollRestoration = "manual";
-    }
-    
-    window.scrollTo(0, 0);
+function atualizarMenuAtivo(viewName) {
+    const menuView = viewName === 'novaFicha' ? 'personagens' : viewName;
+    menuLinks.forEach((link) => {
+        const isActive = link.dataset.view === menuView;
+        link.classList.toggle('is-active', isActive);
 
-    if (window.location.hash) {
-            history.replaceState(null, "", window.location.pathname + window.location.search);
+        if (isActive) {
+            link.setAttribute('aria-current', 'page');
+        } else {
+            link.removeAttribute('aria-current');
+        }
+    });
+}
+
+function obterViewInicial() {
+    const hashToView = {
+        '#secao-personagens': 'personagens',
+        '#secao-grimorio': 'grimorio',
+        '#secao-inventario': 'inventario'
+    };
+
+    return hashToView[window.location.hash] || 'home';
+}
+
+function alternarSecao(viewName, options = {}) {
+    const nextView = sectionViews[viewName] ? viewName : 'home';
+    const { focusTarget = null, updateHash = true } = options;
+
+    controlledSections.forEach((section) => {
+        const shouldShow = sectionViews[nextView].includes(section);
+        section.hidden = !shouldShow;
+    });
+
+    if (voltarInicioBtn) {
+        voltarInicioBtn.hidden = nextView === 'home';
     }
+
+    atualizarMenuAtivo(nextView === 'home' ? '' : nextView);
+
+    if (updateHash) {
+        const nextUrl = nextView === 'home'
+            ? `${window.location.pathname}${window.location.search}`
+            : `${window.location.pathname}${window.location.search}${menuLinks.find((link) => link.dataset.view === nextView)?.getAttribute('href') || ''}`;
+
+        history.replaceState(null, '', nextUrl);
+    }
+
+    if (focusTarget) {
+        focusTarget.focus();
+    }
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
+    const initialView = obterViewInicial();
+
+    alternarSecao(initialView, { updateHash: initialView !== 'home' });
+
     if (criarFichaCta) {
         criarFichaCta.addEventListener('click', () => {
-            formulario.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            nomeInput.focus();
+            alternarSecao('novaFicha', { focusTarget: nomeInput });
         });
     }
+
+    if (voltarInicioBtn) {
+        voltarInicioBtn.addEventListener('click', () => {
+            alternarSecao('home', { focusTarget: criarFichaCta });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    const fecharPainelBtn = document.getElementById('fecharPainelBtn');
+    if (fecharPainelBtn) {
+        fecharPainelBtn.addEventListener('click', fecharPainel);
+    }
+
+    const painelPersonagem = document.getElementById('painelPersonagem');
+    if (painelPersonagem) {
+        painelPersonagem.addEventListener('click', (e) => {
+            if (e.target.matches('.painel-backdrop')) {
+                fecharPainel();
+            } else if (e.target.matches('.btn-usar-slot')) {
+                const nivel = parseInt(e.target.dataset.slot);
+                if (personagemAtivo && slotState[personagemAtivo.id][nivel].atual > 0) {
+                    slotState[personagemAtivo.id][nivel].atual--;
+                    atualizarContadoresSlots();
+                }
+            } else if (e.target.matches('.btn-recuperar-slot')) {
+                const nivel = parseInt(e.target.dataset.slot);
+                if (personagemAtivo) {
+                    slotState[personagemAtivo.id][nivel].atual = slotState[personagemAtivo.id][nivel].max;
+                    atualizarContadoresSlots();
+                }
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !painelPersonagem.hidden) {
+                fecharPainel();
+            }
+        });
+    }
+
+    menuLinks.forEach((link) => {
+        link.addEventListener('click', (event) => {
+            event.preventDefault();
+            alternarSecao(link.dataset.view);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    });
 
     // Event listeners para busca e filtro
     const btnBuscarNome = document.getElementById('btnBuscarNome');
@@ -180,6 +287,7 @@ function exibirPersonagens(personagens) {
 
     // Oculta mensagens anteriores
     ocultarMensagem();
+    personagens.forEach(p => { personagensCache[p.id] = p; });
 
     // Para cada personagem, cria um card com animação de entrada
     personagens.forEach((personagem, index) => {
@@ -201,8 +309,8 @@ function exibirPersonagens(personagens) {
                 <div><span>CA</span><strong>${ca}</strong></div>
             </div>
             <div class="personagem-acoes">
-                <button class="btn-editar btn-detalhes" data-character-id="${personagem.id}" onclick="abrirEditarPersonagem(${personagem.id})">Visualizar Detalhes</button>
-                <button class="btn-editar" onclick="abrirEditarPersonagem(${personagem.id})">Editar</button>
+                <button class="btn-editar btn-detalhes" type="button" onclick="selecionarPersonagem(${personagem.id})">Selecionar Personagem</button>
+                <button class="btn-editar" type="button" onclick="abrirEditarPersonagem(${personagem.id})">Editar</button>
                 <button class="btn-deletar" onclick="deletarPersonagem(${personagem.id})">Deletar</button>
             </div>
         `;
@@ -738,6 +846,61 @@ function ocultarLoading() {
     if (loadingRow) {
         loadingRow.remove();
     }
+}
+
+// ============================================
+// PAINEL LATERAL DE PERSONAGEM
+// ============================================
+
+function calcularSlotsIniciais(nivel) {
+    return {
+        1: { max: Math.min(4, Math.max(2, nivel)), atual: Math.min(4, Math.max(2, nivel)) },
+        2: { max: nivel >= 3 ? Math.min(3, nivel - 1) : 0, atual: nivel >= 3 ? Math.min(3, nivel - 1) : 0 },
+        3: { max: nivel >= 5 ? Math.min(3, nivel - 3) : 0, atual: nivel >= 5 ? Math.min(3, nivel - 3) : 0 }
+    };
+}
+
+function atualizarContadoresSlots() {
+    if (!personagemAtivo) return;
+    const slots = slotState[personagemAtivo.id];
+    [1, 2, 3].forEach((nivel) => {
+        const contador = document.getElementById(`slotContador${nivel}`);
+        const linha = document.querySelector(`.slot-linha[data-slot-nivel="${nivel}"]`);
+        if (contador) contador.textContent = `${slots[nivel].atual}/${slots[nivel].max}`;
+        if (linha) linha.hidden = slots[nivel].max === 0;
+    });
+}
+
+function selecionarPersonagem(id) {
+    personagemAtivo = personagensCache[id] || null;
+    if (!personagemAtivo) return;
+
+    if (!slotState[id]) {
+        slotState[id] = calcularSlotsIniciais(personagemAtivo.nivel);
+    }
+
+    const hp = 10 + personagemAtivo.nivel * 5;
+    const mana = 6 + personagemAtivo.nivel * 3;
+    const ca = 10 + Math.floor(personagemAtivo.nivel / 2);
+
+    document.querySelector('.painel-nome').textContent = personagemAtivo.nome;
+    document.querySelector('.painel-info-char').textContent = `${personagemAtivo.classe} • Nível ${personagemAtivo.nivel}`;
+    document.querySelector('.painel-hp').textContent = hp;
+    document.querySelector('.painel-mana').textContent = mana;
+    document.querySelector('.painel-ca').textContent = ca;
+
+    atualizarContadoresSlots();
+
+    const painel = document.getElementById('painelPersonagem');
+    painel.hidden = false;
+    document.body.style.overflow = 'hidden';
+    document.getElementById('fecharPainelBtn').focus();
+}
+
+function fecharPainel() {
+    document.getElementById('painelPersonagem').hidden = true;
+    document.body.style.overflow = '';
+    personagemAtivo = null;
 }
 
 

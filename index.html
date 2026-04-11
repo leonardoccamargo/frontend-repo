@@ -14,11 +14,12 @@
         <header class="topo-arcano">
             <h1 class="titulo-arcano">Atlas Arcano</h1>
             <nav class="menu-arcano" aria-label="Navegação principal">
-                <a href="#secao-personagens">Personagens</a>
-                <a href="#secao-grimorio">Grimório</a>
-                <a href="#secao-inventario">Inventário</a>
+                <a href="#secao-personagens" class="menu-link" data-view="personagens">Personagens</a>
+                <a href="#secao-grimorio" class="menu-link" data-view="grimorio">Grimório</a>
+                <a href="#secao-inventario" class="menu-link" data-view="inventario">Inventário</a>
                 <button id="themeToggle" class="theme-toggle" title="Tema escuro ativo" aria-label="Tema escuro ativo">Escuro</button>
             </nav>
+            <button id="voltarInicioBtn" class="btn-voltar-inicio" type="button" hidden>Voltar ao inicio</button>
         </header>
 
         <section class="hero-arcano" aria-labelledby="hero-title">
@@ -30,7 +31,7 @@
         </section>
 
         <main>
-            <section id="secao-personagens" class="form-section" aria-labelledby="form-title">
+            <section id="secao-personagens" class="form-section" aria-labelledby="form-title" hidden>
                 <h2 id="form-title">Adicionar Novo Personagem</h2>
                 <form id="personagemForm">
                     <div class="form-group">
@@ -52,7 +53,7 @@
                 </form>
             </section>
 
-            <section id="secao-personagens-grid" class="table-section" aria-labelledby="grid-title">
+            <section id="secao-personagens-grid" class="table-section" aria-labelledby="grid-title" hidden>
                 <h2 id="grid-title">Personagens Cadastrados</h2>
                 
                 <div class="search-filter-container">
@@ -73,7 +74,7 @@
                 <p id="mensagem-lista"></p>
             </section>
 
-            <section id="secao-grimorio" class="aux-section" aria-labelledby="grimorio-title">
+            <section id="secao-grimorio" class="aux-section" aria-labelledby="grimorio-title" hidden>
                 <h2 id="grimorio-title">Grimório</h2>
                 <h3>Slots de Magia</h3>
                 <div class="hook-actions">
@@ -83,7 +84,7 @@
                 </div>
             </section>
 
-            <section id="secao-inventario" class="aux-section" aria-labelledby="inventario-title">
+            <section id="secao-inventario" class="aux-section" aria-labelledby="inventario-title" hidden>
                 <h2 id="inventario-title">Inventário</h2>
                 <p>Espaço preparado para itens, equipamentos e consumíveis da campanha.</p>
                 <div class="hook-actions">
@@ -95,21 +96,49 @@
 
         </main>
 
-        <section id="modalAtributos" class="modal-placeholder" aria-labelledby="atributos-title" aria-hidden="true">
-            <h2 id="atributos-title">Edição de Atributos</h2>
-            <h3>Atributos Base</h3>
-            <div class="hook-actions">
-                <button id="editarForcaBtn" class="btn-editar" type="button" data-attr="forca">Força</button>
-                <button id="editarDestrezaBtn" class="btn-editar" type="button" data-attr="destreza">Destreza</button>
-                <button id="editarConstituicaoBtn" class="btn-editar" type="button" data-attr="constituicao">Constituição</button>
-                <button id="editarInteligenciaBtn" class="btn-editar" type="button" data-attr="inteligencia">Inteligência</button>
-                <button id="editarSabedoriaBtn" class="btn-editar" type="button" data-attr="sabedoria">Sabedoria</button>
-                <button id="editarCarismaBtn" class="btn-editar" type="button" data-attr="carisma">Carisma</button>
-            </div>
-        </section>
+        <div id="painelPersonagem" class="painel-lateral" role="dialog" aria-modal="true" aria-labelledby="painel-titulo" hidden>
+            <div class="painel-backdrop"></div>
+            <aside class="painel-conteudo">
+                <button id="fecharPainelBtn" class="btn-fechar-painel" type="button" aria-label="Fechar painel">✕</button>
+                <div class="painel-header">
+                    <h2 id="painel-titulo" class="painel-nome"></h2>
+                    <p class="painel-info-char"></p>
+                </div>
+                <div class="painel-stats">
+                    <div><span>HP</span><strong class="painel-hp"></strong></div>
+                    <div><span>Mana</span><strong class="painel-mana"></strong></div>
+                    <div><span>CA</span><strong class="painel-ca"></strong></div>
+                </div>
+                <section class="painel-secao" aria-labelledby="painel-slots-titulo">
+                    <h3 id="painel-slots-titulo">Slots de Magia</h3>
+                    <div class="slot-linha" data-slot-nivel="1">
+                        <span>Nível 1</span>
+                        <span class="slot-contador" id="slotContador1"></span>
+                        <button class="btn-editar btn-usar-slot" type="button" data-slot="1">Usar</button>
+                        <button class="btn-editar btn-recuperar-slot" type="button" data-slot="1">Recuperar</button>
+                    </div>
+                    <div class="slot-linha" data-slot-nivel="2">
+                        <span>Nível 2</span>
+                        <span class="slot-contador" id="slotContador2"></span>
+                        <button class="btn-editar btn-usar-slot" type="button" data-slot="2">Usar</button>
+                        <button class="btn-editar btn-recuperar-slot" type="button" data-slot="2">Recuperar</button>
+                    </div>
+                    <div class="slot-linha" data-slot-nivel="3">
+                        <span>Nível 3</span>
+                        <span class="slot-contador" id="slotContador3"></span>
+                        <button class="btn-editar btn-usar-slot" type="button" data-slot="3">Usar</button>
+                        <button class="btn-editar btn-recuperar-slot" type="button" data-slot="3">Recuperar</button>
+                    </div>
+                </section>
+                <section class="painel-secao" aria-labelledby="painel-consumiveis-titulo">
+                    <h3 id="painel-consumiveis-titulo">Consumíveis</h3>
+                    <p class="painel-placeholder">Nenhum consumível adicionado ainda.</p>
+                </section>
+            </aside>
+        </div>
 
         <footer class="rodape-arcano">
-            <p>Atlas Arcano • Registro de campanhas, personagens e aventuras.</p>
+            <p>Atlas Arcano — O gerenciador de personagens para as suas aventuras.</p>
         </footer>
     </div>
 
