@@ -247,6 +247,11 @@ async function carregarPersonagens() {
             headers: { 'Content-Type': 'application/json' }
         });
 
+        if (resposta.status === 404) {
+            exibirPersonagens([]);
+            return;
+        }
+
         // Se a resposta não for OK (200-299), lança erro
         if (!resposta.ok) throw new Error(`HTTP ${resposta.status}`);
 
@@ -715,7 +720,7 @@ themeToggle.addEventListener('click', toggleTheme);
 // ============================================
 
 /**
- * Busca personagens por nome usando a rota /api/buscar
+ * Busca personagens por nome usando filtro na rota /api/personagens
  */
 async function buscarPorNome() {
     const searchNome = document.getElementById('searchNome');
@@ -745,8 +750,14 @@ async function buscarPorNome() {
             }
         } else {
             // Busca via API
-            const resposta = await fetch(`${API_BASE_URL}/api/buscar?nome=${encodeURIComponent(termo)}`);
-            
+            const resposta = await fetch(`${API_ENDPOINT}?nome=${encodeURIComponent(termo)}`);
+
+            if (resposta.status === 404) {
+                mostrarMensagem(`Nenhum personagem encontrado com o nome "${termo}"`, 'info');
+                tabelaCorpo.innerHTML = '';
+                return;
+            }
+
             if (!resposta.ok) {
                 throw new Error(`Erro na busca: ${resposta.status}`);
             }
@@ -768,7 +779,7 @@ async function buscarPorNome() {
 }
 
 /**
- * Filtra personagens por classe usando a rota /api/classe
+ * Filtra personagens por classe usando filtro na rota /api/personagens
  */
 async function filtrarPorClasse() {
     const filterClasse = document.getElementById('filterClasse');
@@ -798,8 +809,14 @@ async function filtrarPorClasse() {
             }
         } else {
             // Filtra via API
-            const resposta = await fetch(`${API_BASE_URL}/api/classe?nome=${encodeURIComponent(classe)}`);
-            
+            const resposta = await fetch(`${API_ENDPOINT}?classe=${encodeURIComponent(classe)}`);
+
+            if (resposta.status === 404) {
+                mostrarMensagem(`Nenhum personagem da classe "${classe}" encontrado`, 'info');
+                tabelaCorpo.innerHTML = '';
+                return;
+            }
+
             if (!resposta.ok) {
                 throw new Error(`Erro no filtro: ${resposta.status}`);
             }
