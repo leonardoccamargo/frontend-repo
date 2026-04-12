@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atlas Arcano | Gestor de Personagens</title>
+    <title>Grimmorium | Gestor de Personagens</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
@@ -12,11 +12,12 @@
 <body>
     <div class="container">
         <header class="topo-arcano">
-            <h1 class="titulo-arcano">Atlas Arcano</h1>
+            <h1 class="titulo-arcano">Grimmorium</h1>
             <nav class="menu-arcano" aria-label="Navegação principal">
                 <a href="#secao-personagens" class="menu-link" data-view="personagens">Personagens</a>
                 <a href="#secao-grimorio" class="menu-link" data-view="grimorio">Grimório</a>
                 <a href="#secao-inventario" class="menu-link" data-view="inventario">Inventário</a>
+                <a href="#secao-dados" class="menu-link" data-view="dados">Dados</a>
                 <button id="themeToggle" class="theme-toggle" title="Tema escuro ativo" aria-label="Tema escuro ativo">Escuro</button>
             </nav>
             <button id="voltarInicioBtn" class="btn-voltar-inicio" type="button" hidden>Voltar ao inicio</button>
@@ -76,21 +77,27 @@
 
             <section id="secao-grimorio" class="aux-section" aria-labelledby="grimorio-title" hidden>
                 <h2 id="grimorio-title">Grimório</h2>
-                <h3>Slots de Magia</h3>
-                <div class="hook-actions">
-                    <button id="gastarSlotNivel1" class="btn-editar" type="button" data-slot-nivel="1">Gastar Slot Nível 1</button>
-                    <button id="gastarSlotNivel2" class="btn-editar" type="button" data-slot-nivel="2">Gastar Slot Nível 2</button>
-                    <button id="recuperarSlots" class="btn-editar" type="button" data-action="recuperar-slots">Recuperar Slots</button>
-                </div>
+                <p>Em breve você poderá criar e salvar suas magias aqui!</p>
             </section>
 
             <section id="secao-inventario" class="aux-section" aria-labelledby="inventario-title" hidden>
                 <h2 id="inventario-title">Inventário</h2>
                 <p>Espaço preparado para itens, equipamentos e consumíveis da campanha.</p>
+            </section>
+
+            <section id="secao-dados" class="aux-section" aria-labelledby="dados-title" hidden>
+                <h2 id="dados-title">Dados</h2>
+                <p>Que os dados decidam o seu destino!</p>
                 <div class="hook-actions">
                     <button id="rolarD20Btn" class="btn-editar" type="button" data-dice="d20">Rolar d20</button>
-                    <button id="rolarD12Btn" class="btn-editar" type="button" data-dice="d12">Rolar d12</button>
+                    <button id="rolarD10Btn" class="btn-editar" type="button" data-dice="d10">Rolar d10</button>
                     <button id="rolarD6Btn" class="btn-editar" type="button" data-dice="d6">Rolar d6</button>
+                    <button id="rolarD4Btn" class="btn-editar" type="button" data-dice="d4">Rolar d4</button>
+                </div>
+                
+                <div class="dice-result-box">
+                    <img src="./assets/icon-d20.png" alt="Dado d20" class="dice-result-img">
+                    <span class="dice-result-number" id="diceResultNumber">-</span>
                 </div>
             </section>
 
@@ -138,7 +145,7 @@
         </div>
 
         <footer class="rodape-arcano">
-            <p>Atlas Arcano — O gerenciador de personagens para as suas aventuras.</p>
+            <p>Grimmorium — O gerenciador de personagens para as suas aventuras.</p>
         </footer>
     </div>
 

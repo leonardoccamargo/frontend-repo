@@ -31,7 +31,8 @@ const sectionViews = {
     personagens: [document.getElementById('secao-personagens-grid')],
     novaFicha: [document.getElementById('secao-personagens'), document.getElementById('secao-personagens-grid')],
     grimorio: [document.getElementById('secao-grimorio')],
-    inventario: [document.getElementById('secao-inventario')]
+    inventario: [document.getElementById('secao-inventario')],
+    dados: [document.getElementById('secao-dados')]
 };
 const controlledSections = Object.values(sectionViews)
     .flat()
@@ -59,7 +60,8 @@ function obterViewInicial() {
     const hashToView = {
         '#secao-personagens': 'personagens',
         '#secao-grimorio': 'grimorio',
-        '#secao-inventario': 'inventario'
+        '#secao-inventario': 'inventario',
+        '#secao-dados': 'dados'
     };
 
     return hashToView[window.location.hash] || 'home';
@@ -151,6 +153,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
+    // Event listeners para botões de dados
+    const diceButtons = Array.from(document.querySelectorAll('[data-dice]'));
+    const diceResultNumber = document.getElementById('diceResultNumber');
+    
+    diceButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            const dado = button.dataset.dice;
+            const lados = parseInt(dado.replace('d', ''), 10);
+            const valor = rolarDado(lados);
+            
+            if (diceResultNumber) {
+                diceResultNumber.textContent = valor;
+            }
+        });
+    });
+
     // Event listeners para busca e filtro
     const btnBuscarNome = document.getElementById('btnBuscarNome');
     const btnFiltrarClasse = document.getElementById('btnFiltrarClasse');
@@ -165,7 +183,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         btnFiltrarClasse.addEventListener('click', filtrarPorClasse);
     }
     if (btnCarregarTodos) {
-        btnCarregarTodos.addEventListener('click', carregarPersonagens);
+        btnCarregarTodos.addEventListener('click', () => {
+            if (searchNome) {
+                searchNome.value = '';
+            }
+            if (filterClasse) {
+                filterClasse.value = '';
+            }
+            carregarPersonagens();
+        });
     }
 
     // Permitir busca com Enter
@@ -918,6 +944,10 @@ function fecharPainel() {
     document.getElementById('painelPersonagem').hidden = true;
     document.body.style.overflow = '';
     personagemAtivo = null;
+}
+
+function rolarDado(lados) {
+    return Math.floor(Math.random() * lados) + 1;
 }
 
 
